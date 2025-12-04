@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kamera Test</title>
+    <style>
+      body {
+        margin: 0;
+        background: #000;
+        color: #fff;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+      video {
+        width: 90vw;
+        max-width: 500px;
+        border-radius: 12px;
+        border: 2px solid #fff;
+      }
+      #msg {
+        margin-top: 10px;
+        font-size: 14px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" autoplay playsinline></video>
+    <div id="msg">Kamera açılıyor...</div>
+
+    <script>
+      const video = document.getElementById("video");
+      const msg = document.getElementById("msg");
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        msg.textContent =
+          "Bu tarayıcı kamera erişimini desteklemiyor. Lütfen güncel Chrome/Safari ile deneyin.";
+      } else {
+        navigator.mediaDevices
+          .getUserMedia({ video: { facingMode: "environment" } })
+          .then((stream) => {
+            video.srcObject = stream;
+            msg.textContent = "Kamera çalışıyor. Eğer burası çalışıyorsa AR sayfası da çalışabilir.";
+          })
+          .catch((err) => {
+            console.error(err);
+            msg.textContent =
+              "Kameraya erişilemiyor. Tarayıcı ayarlarından bu site için kameraya izin verdiğinizden emin olun.";
+          });
+      }
+    </script>
+  </body>
+</html>
