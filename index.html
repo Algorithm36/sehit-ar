@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>Şehitlerimizi Anma - AR Deneyimi</title>
 
-    <!-- A-Frame ve AR.js CDN'den geliyor -->
+    <!-- A-Frame ve AR.js -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.js"></script>
 
@@ -42,6 +42,21 @@
         z-index: 10;
         text-align: center;
       }
+      #error {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(255, 0, 0, 0.2);
+        border: 1px solid rgba(255, 0, 0, 0.5);
+        display: none;
+        z-index: 10;
+        max-width: 90%;
+        text-align: center;
+      }
     </style>
   </head>
 
@@ -53,18 +68,19 @@
     <div id="footer">
       Aziz şehitlerimizi rahmet, minnet ve şükranla anıyoruz. 🇹🇷
     </div>
+    <div id="error"></div>
 
     <!-- AR SAHNESİ -->
     <a-scene
       embedded
       vr-mode-ui="enabled: false"
       renderer="logarithmicDepthBuffer: true;"
-      arjs="sourceType: webcam; debugUIEnabled: false;"
+      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
     >
       <!-- Kamera -->
       <a-entity camera></a-entity>
 
-      <!-- Marker: şimdilik preset hiro kullanıyoruz (hazır hedef) -->
+      <!-- Marker: preset hiro -->
       <a-marker preset="hiro">
         <!-- Yükselen ışık sütunu -->
         <a-cylinder
@@ -122,5 +138,29 @@
         ></a-entity>
       </a-marker>
     </a-scene>
+
+    <script>
+      // Kamera desteği / izin hatasını ekrana yaz
+      const errorDiv = document.getElementById("error");
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        errorDiv.style.display = "block";
+        errorDiv.textContent =
+          "Bu tarayıcı kamera erişimini desteklemiyor. Lütfen güncel Chrome/Safari ile deneyin.";
+      } else {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then((stream) => {
+            // Deneme için açıp hemen kapatıyoruz, AR.js zaten kendi isteyecek
+            stream.getTracks().forEach((t) => t.stop());
+          })
+          .catch((err) => {
+            errorDiv.style.display = "block";
+            errorDiv.textContent =
+              "Kameraya erişilemiyor. Tarayıcı ayarlarından bu site için kameraya izin verin.";
+          });
+      }
+    </script>
   </body>
 </html>
+
